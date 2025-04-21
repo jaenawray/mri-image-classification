@@ -1,14 +1,13 @@
-import pandas as pd
 import os
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, accuracy_score
+from sklearn.metrics import classification_report, accuracy_score, confusion_matrix
 from skimage.io import imread
 from skimage.transform import resize
 from sklearn.preprocessing import LabelEncoder
+import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import GridSearchCV
 
 training_dir = 'image_data/train_images'
@@ -24,10 +23,11 @@ def load_images(directory):
     for file in os.listdir(directory):
         if file.endswith('.jpg'):
             path = os.path.join(directory, file)
-            image = imread(path)
+            image = imread(path, as_gray=True)
 
             # resize to get fixed size inputs for the model, flatten to get a 1D feature vector (each pixel is a feature)
             image = resize(image, image_size).flatten()
+            #print(f"{file}: shape {image.shape}")
 
             label = file.split('_')[0]
 
@@ -64,3 +64,17 @@ y_test_pred = svm.predict(X_test_scaled)
 print('Testing Accuracy:', accuracy_score(y_test_encoder, y_test_pred))
 
 print(classification_report(y_test_encoder, y_test_pred, target_names=encoder.classes_))
+
+params = {'C': np.arange(1, 10), 'gamma': np.arange(1, 5)}
+
+cm = confusion_matrix(y_test_encoder, y_test_pred)
+
+# Plot confusion matrix
+plt.figure(figsize=(8,6))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
+            xticklabels=encoder.classes_,
+            yticklabels=encoder.classes_)
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('Confusion Matrix (Test Set)')
+plt.show()
