@@ -1,4 +1,5 @@
 import os
+import sys
 import numpy as np
 import matplotlib.pyplot as plt
 from itertools import product
@@ -18,6 +19,9 @@ image_size = (128, 128)
 n_estimators_options = [5, 7, 10, 15]
 max_depth_options = [3, 5, 7, 10]
 max_features_options = ['sqrt', 'log2']
+
+# Save print output to rf_predictions.txt
+sys.stdout = open('rf_predictions.txt', 'w')
 
 # Load images 
 def load_images(directory):
@@ -99,7 +103,10 @@ plt.ylabel('Accuracy')
 plt.title('Train vs Validation Accuracy Across Hyperparameters')
 plt.legend()
 plt.tight_layout()
-plt.show()
+plt.savefig("rf_fig_1.png")
+plt.close()
+
+
 
 
 print(f"\nBest Model: n_estimators={best_params[0]}, max_depth={best_params[1]}, max_features={best_params[2]}")
@@ -152,7 +159,10 @@ plt.title("Confusion Matrix")
 plt.xlabel("Predicted")
 plt.ylabel("Actual")
 plt.tight_layout()
-plt.show()
+plt.savefig("rf_figure_2.png")
+plt.close()
+
+
 
 # Feature Importance Heatmap 
 importances = rf_final.feature_importances_
@@ -163,10 +173,13 @@ plt.title('Random Forest Feature Importance Heatmap')
 plt.colorbar(label='Importance')
 plt.axis('off')
 plt.tight_layout()
-plt.show()
+plt.savefig("rf_fig_3.png")
+plt.close()
+
+
 
 # Mask least important features and evaluate again 
-least_important_idx = np.argsort(importances)[:1000]
+least_important_idx = np.argsort(importances)[:500]
 X_full_masked = X_full_scaled.copy()
 X_full_masked[:, least_important_idx] = 0
 

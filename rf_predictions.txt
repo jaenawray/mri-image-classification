@@ -1,0 +1,71 @@
+
+Fine-tuning Random Forest (tracking overfitting)...
+
+5T | d=3 | f=sqrt -> Train Acc: 0.7486 | Val Acc: 0.7352
+5T | d=3 | f=log2 -> Train Acc: 0.7147 | Val Acc: 0.7056
+5T | d=5 | f=sqrt -> Train Acc: 0.8373 | Val Acc: 0.8257
+5T | d=5 | f=log2 -> Train Acc: 0.8249 | Val Acc: 0.8084
+5T | d=7 | f=sqrt -> Train Acc: 0.9233 | Val Acc: 0.8783
+5T | d=7 | f=log2 -> Train Acc: 0.8984 | Val Acc: 0.8520
+5T | d=10 | f=sqrt -> Train Acc: 0.9673 | Val Acc: 0.9112
+5T | d=10 | f=log2 -> Train Acc: 0.9689 | Val Acc: 0.9054
+7T | d=3 | f=sqrt -> Train Acc: 0.7459 | Val Acc: 0.7319
+7T | d=3 | f=log2 -> Train Acc: 0.7437 | Val Acc: 0.7401
+7T | d=5 | f=sqrt -> Train Acc: 0.8402 | Val Acc: 0.8224
+7T | d=5 | f=log2 -> Train Acc: 0.8278 | Val Acc: 0.8133
+7T | d=7 | f=sqrt -> Train Acc: 0.9198 | Val Acc: 0.8840
+7T | d=7 | f=log2 -> Train Acc: 0.9154 | Val Acc: 0.8709
+7T | d=10 | f=sqrt -> Train Acc: 0.9735 | Val Acc: 0.9145
+7T | d=10 | f=log2 -> Train Acc: 0.9741 | Val Acc: 0.9145
+10T | d=3 | f=sqrt -> Train Acc: 0.7490 | Val Acc: 0.7352
+10T | d=3 | f=log2 -> Train Acc: 0.7317 | Val Acc: 0.7253
+10T | d=5 | f=sqrt -> Train Acc: 0.8453 | Val Acc: 0.8141
+10T | d=5 | f=log2 -> Train Acc: 0.8395 | Val Acc: 0.8141
+10T | d=7 | f=sqrt -> Train Acc: 0.9319 | Val Acc: 0.8898
+10T | d=7 | f=log2 -> Train Acc: 0.9280 | Val Acc: 0.8824
+10T | d=10 | f=sqrt -> Train Acc: 0.9817 | Val Acc: 0.9227
+10T | d=10 | f=log2 -> Train Acc: 0.9794 | Val Acc: 0.9219
+15T | d=3 | f=sqrt -> Train Acc: 0.7529 | Val Acc: 0.7434
+15T | d=3 | f=log2 -> Train Acc: 0.7429 | Val Acc: 0.7500
+15T | d=5 | f=sqrt -> Train Acc: 0.8486 | Val Acc: 0.8248
+15T | d=5 | f=log2 -> Train Acc: 0.8445 | Val Acc: 0.8339
+15T | d=7 | f=sqrt -> Train Acc: 0.9333 | Val Acc: 0.8972
+15T | d=7 | f=log2 -> Train Acc: 0.9268 | Val Acc: 0.8816
+15T | d=10 | f=sqrt -> Train Acc: 0.9860 | Val Acc: 0.9293
+15T | d=10 | f=log2 -> Train Acc: 0.9842 | Val Acc: 0.9252
+
+Best Model: n_estimators=15, max_depth=10, max_features=sqrt
+Validation Accuracy: 0.9293
+
+Training Accuracy (on full train+val set): 0.9843
+
+Final Test Accuracy (best generalizing model): 0.956
+
+Classification Report (before feature optimization):
+
+              precision    recall  f1-score   support
+
+          gl       1.00      0.94      0.97       316
+          me       0.93      0.96      0.94       227
+          no       0.88      0.98      0.92        93
+          pi       0.98      0.99      0.98       237
+
+    accuracy                           0.96       873
+   macro avg       0.95      0.96      0.95       873
+weighted avg       0.96      0.96      0.96       873
+
+Test Accuracy (masked features): 0.9599999358533792
+
+Classification Report (after masking least important features):
+
+              precision    recall  f1-score   support
+
+          gl       0.99      0.94      0.96       316
+          me       0.93      0.95      0.94       227
+          no       0.87      0.98      0.92        93
+          pi       0.97      0.98      0.98       237
+
+    accuracy                           0.96       873
+   macro avg       0.94      0.96      0.95       873
+weighted avg       0.96      0.96      0.96       873
+
