@@ -43,7 +43,7 @@ torchvision
 - **Outputs:** accuracy/loss plots, confusion matrix, classification report
 
 ---
-### 🔷 Random Forest Classifier
+### Random Forest Classifier
 
 - **Script:** `rf.py`
 - Grid search over:
