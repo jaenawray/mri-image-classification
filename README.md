@@ -26,14 +26,14 @@ torchvision
 
 
 ## Model Descriptions
-
+---
 ### SVM Classifier
 
 - **Script:** `svm.py`
 - Preprocessed features from grayscale MRI images
 - Grid search over kernel types and regularization parameters
 - **Outputs:** classification report and confusion matrix
-
+---
 ### CNN Classifier
 
 - **Script:** `cnn.ipynp`
