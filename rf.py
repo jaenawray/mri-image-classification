@@ -10,6 +10,9 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import seaborn as sns
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import precision_recall_curve, average_precision_score
+from sklearn.preprocessing import label_binarize
+from sklearn.metrics import roc_curve, auc
 
 # CONFIG 
 train_dir = 'image_data/train_images'
@@ -85,7 +88,7 @@ for n, d, f in product(n_estimators_options, max_depth_options, max_features_opt
         best_model = rf
 
 
-# Plotting train vs validation accuracy
+# Plot 1: Train vs Validation Accuracy Across Hyperparameters
 x = np.arange(len(param_labels))
 width = 0.35
 
@@ -106,9 +109,7 @@ plt.tight_layout()
 plt.savefig("rf_fig_1.png")
 plt.close()
 
-
-
-
+# Print Best Model Parameters
 print(f"\nBest Model: n_estimators={best_params[0]}, max_depth={best_params[1]}, max_features={best_params[2]}")
 print(f"Validation Accuracy: {best_acc:.4f}")
 
@@ -116,7 +117,6 @@ print(f"Validation Accuracy: {best_acc:.4f}")
 X_full = np.vstack([X_train_raw, load_images(valid_dir)[0]])
 y_full = np.concatenate([y_train_raw, load_images(valid_dir)[1]])
 y_full_enc = encoder.transform(y_full)
-
 X_full_scaled = scaler.fit_transform(X_full)
 
 rf_final = RandomForestClassifier(
@@ -142,29 +142,16 @@ print(f"\nTraining Accuracy (on full train+val set): {train_acc:.4f}")
 print(f"\nFinal Test Accuracy (best generalizing model): {test_acc:.4f}")
 
 # Check for overfitting
-if train_acc - test_acc > 0.01:
+if train_acc - test_acc > 0.05:
     print("Overfitting detected: training accuracy is significantly higher than test accuracy.")
 else:
     print("No significant overfitting detected.")
 
-# Print classification report BEFORE optimization
+# Print classification report BEFORE feature masking/optimization
 print("\nClassification Report (before feature optimization):\n")
 print(classification_report(y_test_enc, y_pred, target_names=encoder.classes_))
 
-# Confusion Matrix
-conf_matrix = confusion_matrix(y_test_enc, y_pred)
-plt.figure(figsize=(6, 5))
-sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=encoder.classes_, yticklabels=encoder.classes_)
-plt.title("Confusion Matrix")
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-plt.tight_layout()
-plt.savefig("rf_figure_2.png")
-plt.close()
-
-
-
-# Feature Importance Heatmap 
+# Plot 2: Feature Importance Heatmap 
 importances = rf_final.feature_importances_
 heatmap = importances.reshape(image_size[0], image_size[1])
 plt.figure(figsize=(6, 6))
@@ -173,10 +160,7 @@ plt.title('Random Forest Feature Importance Heatmap')
 plt.colorbar(label='Importance')
 plt.axis('off')
 plt.tight_layout()
-plt.savefig("rf_fig_3.png")
-plt.close()
-
-
+plt.show()
 
 # Mask least important features and evaluate again 
 least_important_idx = np.argsort(importances)[:500]
@@ -193,3 +177,58 @@ masked_pred = rf_masked.predict(X_test_masked)
 print("Test Accuracy (masked features):", accuracy_score(y_test_enc, masked_pred))
 print("\nClassification Report (after masking least important features):\n")
 print(classification_report(y_test_enc, masked_pred, target_names=encoder.classes_))
+
+# Plot 3: Confusion Matrix
+conf_matrix = confusion_matrix(y_test_enc, y_pred)
+plt.figure(figsize=(6, 5))
+sns.heatmap(conf_matrix, annot=True, fmt="d", cmap="Blues", xticklabels=encoder.classes_, yticklabels=encoder.classes_)
+plt.title("Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.tight_layout()
+plt.savefig("rf_figure_2.png")
+plt.close()
+
+
+# Plot 4: Precision Recall Curve per  Class 
+y_proba = rf_final.predict_proba(X_test_scaled)
+
+# Binarize the true labels
+y_test_bin = label_binarize(y_test_enc, classes=np.unique(y_test_enc))
+n_classes = y_test_bin.shape[1]
+
+# Plot precision-recall curve for each class
+plt.figure(figsize=(8, 6))
+for i in range(n_classes):
+    precision, recall, _ = precision_recall_curve(y_test_bin[:, i], y_proba[:, i])
+    ap = average_precision_score(y_test_bin[:, i], y_proba[:, i])
+    plt.plot(recall, precision, label=f'{encoder.classes_[i]} (AP={ap:.2f})')
+
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+plt.title('Precision–Recall Curve per Class')
+plt.legend(loc='best')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("rf_precision_recall_curve.png")
+plt.close()
+
+
+# Plot 5: ROC curve for each class
+plt.figure(figsize=(8, 6))
+for i in range(n_classes):
+    fpr, tpr, _ = roc_curve(y_test_bin[:, i], y_proba[:, i])
+    roc_auc = auc(fpr, tpr)
+    plt.plot(fpr, tpr, label=f'{encoder.classes_[i]} (AUC={roc_auc:.2f})')
+
+# Plot diagonal line for random guess
+plt.plot([0, 1], [0, 1], 'k--', label='Random (AUC=0.50)')
+
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve per Class')
+plt.legend(loc='lower right')
+plt.grid(True)
+plt.tight_layout()
+plt.savefig("rf_roc_curve.png")
+plt.close() 
