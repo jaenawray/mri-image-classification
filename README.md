@@ -60,14 +60,14 @@ torchvision
 
 ### SVM Classifier
 
-- **Script:** `svm_model/svm_classifier.py`
+- **Script:** `svm.py`
 - Preprocessed features from grayscale MRI images
 - Grid search over kernel types and regularization parameters
 - **Outputs:** classification report and confusion matrix
 
 ### CNN Classifier
 
-- **Script:** `cnn_model/cnn.py`
+- **Script:** `cnn.ipynp`
 - Architecture: 3 convolutional blocks with batch normalization, dropout, and 2 fully connected layers
 - Optimizer: AdamW
 - Early stopping based on validation accuracy
@@ -76,7 +76,7 @@ torchvision
 ---
 ### 🔷 Random Forest Classifier
 
-- **Script:** `rf_model/rf_classifier.py`
+- **Script:** `rf.py`
 - Grid search over:
   - Number of trees (`n_estimators`)
   - Tree depth (`max_depth`)
